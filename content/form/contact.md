@@ -1,6 +1,6 @@
 ---
 date: "2019-02-25T13:38:41-06:00"
-description: This form is for contacting me about speaking engagements, opportunities to work together, or mentorship requests.
+description: Get in touch. I’d love to hear from you!
 draft: false
 formspree_form_id: manqdldw
 layout: split-right
@@ -8,7 +8,7 @@ name: Contact Us Form
 show_poweredby_formspree: true
 show_social_links: true
 submit_button_label: Send Message
-title: Hi there
+title: Hi there,
 type: form
 url: contact
 ---
