@@ -105,27 +105,23 @@ enableEmoji = true
   [[params.social]]
       icon      = "github" # icon name without the 'fa-'
       icon_pack = "fab"
-      url       = "https://github.com/apreshill/apero"
-  [[params.social]]
-      icon      = "bluesky" # icon name without the 'fa-'
-      icon_pack = "fab"
-      url       = "https://bsky.app/"
-  [[params.social]]
-      icon      = "instagram" # icon name without the 'fa-'
-      icon_pack = "fab"
-      url       = "https://www.instagram.com/explore/tags/apero/"
-  [[params.social]]
-      icon      = "x-twitter" # icon name without the 'fa-'
-      icon_pack = "fab"
-      url       = "https://twitter.com/hashtag/apéro"
-  [[params.social]]
-      icon      = "impactstory" # icon name without the 'fa-'
-      icon_pack = "ai"
-      url       = "https://impactstory.org/u/0000-0002-8082-1890"
+      url       = "https://github.com/shubhamdutta26"
   [[params.social]]
       icon      = "orcid" # icon name without the 'fa-'
-      icon_pack = "ai"
-      url       = "http://orcid.org/0000-0002-8082-1890"
+      icon_pack = "fab"
+      url       = "https://orcid.org/0000-0001-8484-0717"
+  [[params.social]]
+      icon      = "google-scholar" # icon name without the 'fa-'
+      icon_pack = "fab"
+      url       = "https://scholar.google.com/citations?user=okp_AlgAAAAJ&hl=en"
+  [[params.social]]
+      icon      = "linkedin" # icon name without the 'fa-'
+      icon_pack = "fab"
+      url       = "https://scholar.google.com/citations?user=okp_AlgAAAAJ&hl=en"
+  [[params.social]]
+      icon      = "youtube" # icon name without the 'fa-'
+      icon_pack = "fab"
+      url       = "https://scholar.google.com/citations?user=okp_AlgAAAAJ&hl=en"
   [[params.social]]
       icon      = "rss" # icon name without the 'fa-'
       icon_pack = "fas"

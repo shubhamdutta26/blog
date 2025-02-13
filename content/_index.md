@@ -10,7 +10,7 @@ show_action_link: true
 show_social_links: true
 subtitle: Genomics | Antibodies | Flow Cytometry | Data Science
 text_align_left: false
-title: Shubham Dutta
+title: Shubham Dutta, Ph.D.
 type: home
 ---
 

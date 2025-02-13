@@ -104,10 +104,10 @@
     <loc>//localhost:4321/blog/built-in-contact-form/</loc>
     <lastmod>2019-07-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:4321/contact/</loc>
+    <loc>//localhost:4321/form/</loc>
     <lastmod>2019-02-25T13:38:41-06:00</lastmod>
   </url><url>
-    <loc>//localhost:4321/form/</loc>
+    <loc>//localhost:4321/contact/</loc>
     <lastmod>2019-02-25T13:38:41-06:00</lastmod>
   </url><url>
     <loc>//localhost:4321/about/</loc>
