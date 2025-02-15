@@ -8,10 +8,7 @@ categories:
 - broom
 date: "2023-06-08"
 draft: false
-excerpt: This theme offers built-in Font Awesome icons for organizing your collection
-  of social accounts and their links. Use icons to help visitors find you wherever
-  you want to be found, and learn how to show or hide them in your site's header,
-  footer, homepage, about page, and contact form.
+excerpt: A step-by-step guide to fitting dose-response curves on ELISA data in R using `ggplot2`, `drc`, and `broom.` This tutorial walks through data preparation, visualization, curve fitting, and statistical analysis of the model.
 layout: single
 subtitle: A working example of how to fit dose response curves on ELISA data in R.
 title: Dose response curve fitting in R
@@ -30,7 +27,7 @@ library(broom)
 
 ## The data
 
-Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.
+Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found [here](elisa_drc.csv).
 
 
 ``` r
@@ -60,6 +57,7 @@ Let's focus on three variables.
 
 ## Prepare data before plotting
 
+Before plotting, we need to preprocess the data by subtracting the mean blank OD value from each measurement. This ensures that our response values are baseline-corrected, allowing for a more accurate dose-response analysis. The data is then grouped by antibody and concentration to compute the mean and standard deviation for each condition.
 
 
 ``` r
@@ -91,9 +89,9 @@ head(summary)
 ## 6 aBACE                     2.5       1.28   0.0486
 ```
 
-Wherever you end up wanting to show your social icons, you'll need to start by setting up the links in your site `config.toml` file. Open that up and scroll down to the `[[params.social]]` section. The start of it looks like this:
-
 ## The final plot
+
+The plot visualizes the dose-response relationship of two antibody reagents using four-parameter logistic (4PL) in the `drc` package.
 
 
 ``` r
@@ -101,8 +99,9 @@ theme_set(theme_bw(base_size = 20))
 ggplot(summary, aes(x = primary_mab_conc, 
                     y = mean_od, 
                     group = primary_mab_name, 
-                    color = primary_mab_name)) +
-  geom_point(shape = 21, size = 3, stroke = 1.5) +
+                    color = primary_mab_name,
+                    shape = primary_mab_name)) +
+  geom_point(size = 3, stroke = 1.5) +
   geom_smooth(method = drc::drm, 
               method.args = list(fct = drc::L.4()),
               se = FALSE, linewidth = 1) +
@@ -110,21 +109,24 @@ ggplot(summary, aes(x = primary_mab_conc,
                     ymax = mean_od + mean_sd),
                 width = 0.1) +
   scale_x_log10() +
-  scale_color_manual(values = c("#2F9D72", "#2D3047")) +
-  labs(x = "Log of antibody concentration (µg/ml)",
+  scale_color_manual(name = NULL, values = c("#2F9D72", "#2D3047")) +
+  scale_shape_manual(name = NULL, values = c(1, 2)) +
+  labs(x = "Log concentration (µg/ml)",
        y = expression(OD[450]),
        color = NULL) +
   theme(legend.position = "inside",
         legend.position.inside = c(0.2, 0.7))
 ```
 
-```
-## `geom_smooth()` using formula = 'y ~ x'
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/plot-data-1.png" width="672" />
 
 ## Statistical analysis of the fit
+
+After fitting the logistic regression model, we analyze the goodness of fit and residuals. The `tidy()`, `glance()`, and `augment()` functions from the `broom` package allow us to:
+
+-   Extract parameter estimates, including the slope and effective dose (ED50).
+-   Assess model fit statistics.
+-   Examine residuals to check for systematic deviations or patterns.
 
 
 ``` r
@@ -133,23 +135,30 @@ drm_model <- drm(formula = od450~primary_mab_conc,
                  curveid = primary_mab_name, 
                  data = raw_data_no_blanks, 
                  fct = LL.4(names=c("Slope", "Lower", "Upper", "ED50")))
-# tidy(drm_model)
-# glance(drm_model)
-# augment(drm_model, data = raw_data_no_blanks)
+tidy(drm_model)
 ```
 
+```
+## # A tibble: 8 × 6
+##   term  curve estimate std.error statistic  p.value
+##   <chr> <chr>    <dbl>     <dbl>     <dbl>    <dbl>
+## 1 Slope aBACE   -1.06     0.140      -7.56 8.83e- 9
+## 2 Slope aSARS   -1.12     0.147      -7.61 7.66e- 9
+## 3 Lower aBACE    0.179    0.0376      4.77 3.44e- 5
+## 4 Lower aSARS    0.168    0.0355      4.74 3.70e- 5
+## 5 Upper aBACE    1.33     0.0327     40.7  9.60e-31
+## 6 Upper aSARS    1.31     0.0314     41.7  4.42e-31
+## 7 ED50  aBACE    0.134    0.0180      7.46 1.19e- 8
+## 8 ED50  aSARS    0.137    0.0175      7.83 4.05e- 9
+```
 
 ``` r
-ggplot(augment(drm_model, data = raw_data_no_blanks), 
-       aes(.fitted, .resid, color = as.factor(primary_mab_conc))) +
-  geom_hline(yintercept = 0) +
-  geom_point(shape = 21, size = 3, stroke = 1.5) +
-  labs(color = "dilutions") +
-  facet_grid(cols = vars(primary_mab_name))
+glance(drm_model)
 ```
 
 ```
-## Warning in model$der: partial match of 'der' to 'deriv1'
+## # A tibble: 1 × 4
+##     AIC   BIC logLik   df.residual
+##   <dbl> <dbl> <logLik>       <int>
+## 1 -106. -90.0 61.82541          34
 ```
-
-<img src="{{< blogdown/postref >}}index_files/figure-html/fit-data-2-1.png" width="672" />

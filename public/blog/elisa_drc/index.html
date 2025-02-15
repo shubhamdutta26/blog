@@ -38,9 +38,9 @@
 
 
     
-        <meta property="og:image" content="//localhost:4321/blog/elisa_drc/featured.jpg" >
+        <meta property="og:image" content="//localhost:4321/blog/elisa_drc/featured.png" >
         <meta property="twitter:card" content="summary_large_image">
-        <meta name="twitter:image" content="//localhost:4321/blog/elisa_drc/featured.jpg" >
+        <meta name="twitter:image" content="//localhost:4321/blog/elisa_drc/featured.png" >
     
     
   
@@ -49,8 +49,8 @@
 library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The data Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.">
   <meta itemprop="datePublished" content="2023-06-08T00:00:00+00:00">
   <meta itemprop="dateModified" content="2023-06-08T00:00:00+00:00">
-  <meta itemprop="wordCount" content="521">
-  <meta itemprop="image" content="//localhost:4321/blog/elisa_drc/featured.jpg">
+  <meta itemprop="wordCount" content="667">
+  <meta itemprop="image" content="//localhost:4321/blog/elisa_drc/featured.png">
   <meta itemprop="keywords" content="ELISA,Dose Response,Ggplot2,Drc,Broom">
   
   <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -129,7 +129,8 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
-<p>Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.</p>
+<p>Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found 
+<a href="elisa_drc.csv">here</a>.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>raw_data <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">read_csv</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;elisa_drc.csv&#34;</span><span style="color:#1f2328">,</span> show_col_types <span style="color:#0550ae">=</span> <span style="color:#cf222e">FALSE</span><span style="color:#1f2328">)</span>
 </span></span><span style="display:flex;"><span><span style="color:#6639ba">glimpse</span><span style="color:#1f2328">(</span>raw_data<span style="color:#1f2328">)</span>
 </span></span></code></pre></div><pre tabindex="0"><code>## Rows: 50
@@ -160,6 +161,7 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
+<p>Before plotting, we need to preprocess the data by subtracting the mean blank OD value from each measurement. This ensures that our response values are baseline-corrected, allowing for a more accurate dose-response analysis. The data is then grouped by antibody and concentration to compute the mean and standard deviation for each condition.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>blank_data <span style="color:#0550ae">&lt;-</span> raw_data <span style="color:#0550ae">|&gt;</span>
 </span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">filter</span><span style="color:#1f2328">(</span>primary_mab_name <span style="color:#0550ae">==</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span>
 </span></span><span style="display:flex;"><span>mean_blank <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">mean</span><span style="color:#1f2328">(</span>blank_data[[<span style="color:#0a3069">&#34;od450&#34;</span>]]<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">)</span>
@@ -183,8 +185,7 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
 ## 4 aBACE                     0.156     0.740  0.0531
 ## 5 aBACE                     0.625     1.11   0.0358
 ## 6 aBACE                     2.5       1.28   0.0486
-</code></pre><p>Wherever you end up wanting to show your social icons, you&rsquo;ll need to start by setting up the links in your site <code>config.toml</code> file. Open that up and scroll down to the <code>[[params.social]]</code> section. The start of it looks like this:</p>
-
+</code></pre>
 
 
 
@@ -194,12 +195,14 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
+<p>The plot visualizes the dose-response relationship of two antibody reagents using four-parameter logistic (4PL) in the <code>drc</code> package.</p>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">theme_set</span><span style="color:#1f2328">(</span><span style="color:#6639ba">theme_bw</span><span style="color:#1f2328">(</span>base_size <span style="color:#0550ae">=</span> <span style="color:#0550ae">20</span><span style="color:#1f2328">))</span>
 </span></span><span style="display:flex;"><span><span style="color:#6639ba">ggplot</span><span style="color:#1f2328">(</span>summary<span style="color:#1f2328">,</span> <span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> primary_mab_conc<span style="color:#1f2328">,</span> 
 </span></span><span style="display:flex;"><span>                    y <span style="color:#0550ae">=</span> mean_od<span style="color:#1f2328">,</span> 
 </span></span><span style="display:flex;"><span>                    group <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span> 
-</span></span><span style="display:flex;"><span>                    color <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>shape <span style="color:#0550ae">=</span> <span style="color:#0550ae">21</span><span style="color:#1f2328">,</span> size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>                    color <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>                    shape <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_smooth</span><span style="color:#1f2328">(</span>method <span style="color:#0550ae">=</span> drc<span style="color:#0550ae">::</span>drm<span style="color:#1f2328">,</span> 
 </span></span><span style="display:flex;"><span>              method.args <span style="color:#0550ae">=</span> <span style="color:#6639ba">list</span><span style="color:#1f2328">(</span>fct <span style="color:#0550ae">=</span> drc<span style="color:#0550ae">::</span><span style="color:#6639ba">L.4</span><span style="color:#1f2328">()),</span>
 </span></span><span style="display:flex;"><span>              se <span style="color:#0550ae">=</span> <span style="color:#cf222e">FALSE</span><span style="color:#1f2328">,</span> linewidth <span style="color:#0550ae">=</span> <span style="color:#0550ae">1</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
@@ -207,14 +210,14 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
 </span></span><span style="display:flex;"><span>                    ymax <span style="color:#0550ae">=</span> mean_od <span style="color:#0550ae">+</span> mean_sd<span style="color:#1f2328">),</span>
 </span></span><span style="display:flex;"><span>                width <span style="color:#0550ae">=</span> <span style="color:#0550ae">0.1</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_x_log10</span><span style="color:#1f2328">()</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_color_manual</span><span style="color:#1f2328">(</span>values <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;#2F9D72&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;#2D3047&#34;</span><span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;Log of antibody concentration (µg/ml)&#34;</span><span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_color_manual</span><span style="color:#1f2328">(</span>name <span style="color:#0550ae">=</span> <span style="color:#cf222e">NULL</span><span style="color:#1f2328">,</span> values <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;#2F9D72&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;#2D3047&#34;</span><span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_shape_manual</span><span style="color:#1f2328">(</span>name <span style="color:#0550ae">=</span> <span style="color:#cf222e">NULL</span><span style="color:#1f2328">,</span> values <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0550ae">1</span><span style="color:#1f2328">,</span> <span style="color:#0550ae">2</span><span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;Log concentration (µg/ml)&#34;</span><span style="color:#1f2328">,</span>
 </span></span><span style="display:flex;"><span>       y <span style="color:#0550ae">=</span> <span style="color:#6639ba">expression</span><span style="color:#1f2328">(</span>OD[450]<span style="color:#1f2328">),</span>
 </span></span><span style="display:flex;"><span>       color <span style="color:#0550ae">=</span> <span style="color:#cf222e">NULL</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#6639ba">theme</span><span style="color:#1f2328">(</span>legend.position <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;inside&#34;</span><span style="color:#1f2328">,</span>
 </span></span><span style="display:flex;"><span>        legend.position.inside <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0550ae">0.2</span><span style="color:#1f2328">,</span> <span style="color:#0550ae">0.7</span><span style="color:#1f2328">))</span>
-</span></span></code></pre></div><pre tabindex="0"><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
-</code></pre><img src="/blog/elisa_drc/index_files/figure-html/plot-data-1.png" width="672" />
+</span></span></code></pre></div><img src="/blog/elisa_drc/index_files/figure-html/plot-data-1.png" width="672" />
 
 
 
@@ -225,23 +228,35 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
+<p>After fitting the logistic regression model, we analyze the goodness of fit and residuals. The <code>tidy()</code>, <code>glance()</code>, and <code>augment()</code> functions from the <code>broom</code> package allow us to:</p>
+<ul>
+<li>Extract parameter estimates, including the slope and effective dose (ED50).</li>
+<li>Assess model fit statistics.</li>
+<li>Examine residuals to check for systematic deviations or patterns.</li>
+</ul>
 <div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>raw_data_no_blanks <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">subset</span><span style="color:#1f2328">(</span>raw_data<span style="color:#1f2328">,</span> primary_mab_name <span style="color:#0550ae">!=</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span>
 </span></span><span style="display:flex;"><span>drm_model <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">drm</span><span style="color:#1f2328">(</span>formula <span style="color:#0550ae">=</span> od450<span style="color:#0550ae">~</span>primary_mab_conc<span style="color:#1f2328">,</span> 
 </span></span><span style="display:flex;"><span>                 curveid <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span> 
 </span></span><span style="display:flex;"><span>                 data <span style="color:#0550ae">=</span> raw_data_no_blanks<span style="color:#1f2328">,</span> 
 </span></span><span style="display:flex;"><span>                 fct <span style="color:#0550ae">=</span> <span style="color:#6639ba">LL.4</span><span style="color:#1f2328">(</span>names<span style="color:#0550ae">=</span><span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;Slope&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;Lower&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;Upper&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;ED50&#34;</span><span style="color:#1f2328">)))</span>
-</span></span><span style="display:flex;"><span><span style="color:#57606a"># tidy(drm_model)</span>
-</span></span><span style="display:flex;"><span><span style="color:#57606a"># glance(drm_model)</span>
-</span></span><span style="display:flex;"><span><span style="color:#57606a"># augment(drm_model, data = raw_data_no_blanks)</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">ggplot</span><span style="color:#1f2328">(</span><span style="color:#6639ba">augment</span><span style="color:#1f2328">(</span>drm_model<span style="color:#1f2328">,</span> data <span style="color:#0550ae">=</span> raw_data_no_blanks<span style="color:#1f2328">),</span> 
-</span></span><span style="display:flex;"><span>       <span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>.fitted<span style="color:#1f2328">,</span> .resid<span style="color:#1f2328">,</span> color <span style="color:#0550ae">=</span> <span style="color:#6639ba">as.factor</span><span style="color:#1f2328">(</span>primary_mab_conc<span style="color:#1f2328">)))</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_hline</span><span style="color:#1f2328">(</span>yintercept <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>shape <span style="color:#0550ae">=</span> <span style="color:#0550ae">21</span><span style="color:#1f2328">,</span> size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>color <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;dilutions&#34;</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">facet_grid</span><span style="color:#1f2328">(</span>cols <span style="color:#0550ae">=</span> <span style="color:#6639ba">vars</span><span style="color:#1f2328">(</span>primary_mab_name<span style="color:#1f2328">))</span>
-</span></span></code></pre></div><pre tabindex="0"><code>## Warning in model$der: partial match of &#39;der&#39; to &#39;deriv1&#39;
-</code></pre><img src="/blog/elisa_drc/index_files/figure-html/fit-data-2-1.png" width="672" />
-
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">tidy</span><span style="color:#1f2328">(</span>drm_model<span style="color:#1f2328">)</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## # A tibble: 8 × 6
+##   term  curve estimate std.error statistic  p.value
+##   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Slope aBACE   -1.06     0.140      -7.56 8.83e- 9
+## 2 Slope aSARS   -1.12     0.147      -7.61 7.66e- 9
+## 3 Lower aBACE    0.179    0.0376      4.77 3.44e- 5
+## 4 Lower aSARS    0.168    0.0355      4.74 3.70e- 5
+## 5 Upper aBACE    1.33     0.0327     40.7  9.60e-31
+## 6 Upper aSARS    1.31     0.0314     41.7  4.42e-31
+## 7 ED50  aBACE    0.134    0.0180      7.46 1.19e- 8
+## 8 ED50  aSARS    0.137    0.0175      7.83 4.05e- 9
+</code></pre><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">glance</span><span style="color:#1f2328">(</span>drm_model<span style="color:#1f2328">)</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## # A tibble: 1 × 4
+##     AIC   BIC logLik   df.residual
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;logLik&gt;       &lt;int&gt;
+## 1 -106. -90.0 61.82541          34
+</code></pre>
         
         <details closed class="f6 fw7 input-reset">
   <dl class="f6 lh-copy">
@@ -250,7 +265,7 @@ library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The d
   </dl>
   <dl class="f6 lh-copy">
     <dt class="fw7">Length:</dt>
-    <dd class="fw5 ml0">3 minute read, 521 words</dd>
+    <dd class="fw5 ml0">4 minute read, 667 words</dd>
   </dl>
   
   <dl class="f6 lh-copy">
