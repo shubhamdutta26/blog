@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="generator" content="Hugo 0.143.1">
-<title>Set up your social | Shubham Dutta</title>
+<title>Dose response curve fitting in R | Shubham Dutta</title>
 
 
 <meta property="twitter:site" content="@ursshubham">
@@ -24,12 +24,12 @@
   
     
   
-<meta name="description" content="Social icons may appear on several pages throughout your site. Learn how to set them up, and control where they show up.">
+<meta name="description" content="A working example of how to fit dose response curves on ELISA data in R.">
 
 
 <meta property="og:site_name" content="Shubham Dutta">
-<meta property="og:title" content="Set up your social | Shubham Dutta">
-<meta property="og:description" content="Social icons may appear on several pages throughout your site. Learn how to set them up, and control where they show up." />
+<meta property="og:title" content="Dose response curve fitting in R | Shubham Dutta">
+<meta property="og:description" content="A working example of how to fit dose response curves on ELISA data in R." />
 <meta property="og:type" content="page" />
 <meta property="og:url" content="//localhost:4321/blog/social/" />
 <meta property="og:locale" content="en">
@@ -44,15 +44,14 @@
     
     
   
-  <meta itemprop="name" content="Set up your social">
-  <meta itemprop="description" content="There are five places where you can choose to show social icons. Here is the tl;dr:
-site header (set in config.toml), site footer (set in config.toml), homepage (set in content/_index.md), about page in the sidebar (set in content/about/sidebar/index.md), and contact page (set in content/form/contact.md). Read on to learn how to set up your social icons, and how to show/hide them.
-Configure social Wherever you end up wanting to show your social icons, you’ll need to start by setting up the links in your site config.toml file. Open that up and scroll down to the [[params.social]] section. The start of it looks like this:">
-  <meta itemprop="datePublished" content="2021-01-28T00:00:00+00:00">
-  <meta itemprop="dateModified" content="2021-01-28T00:00:00+00:00">
-  <meta itemprop="wordCount" content="508">
+  <meta itemprop="name" content="Dose response curve fitting in R">
+  <meta itemprop="description" content="Here is an example of how to fit and analyse dose response data using ggplot2, drc, and broom. We will start by loading some packages needed for the analysis.
+library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The data Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.">
+  <meta itemprop="datePublished" content="2023-06-08T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2023-06-08T00:00:00+00:00">
+  <meta itemprop="wordCount" content="521">
   <meta itemprop="image" content="//localhost:4321/blog/social/featured.jpg">
-  <meta itemprop="keywords" content="Theme Features">
+  <meta itemprop="keywords" content="ELISA,Dose Response,Ggplot2,Drc,Broom">
   
   <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
@@ -105,142 +104,158 @@ Configure social Wherever you end up wanting to show your social icons, you’ll
   <section class="page-content mw7 center">
     <article class="post-content pa0 ph4-l">
       <header class="post-header">
-        <h1 class="f1 lh-solid measure-narrow mb3 fw4">Set up your social</h1>
-        <h4 class="f4 mt0 mb4 lh-title measure">Social icons may appear on several pages throughout your site. Learn how to set them up, and control where they show up.</h4>
-        <p class="f6 measure lh-copy mv1">By Alison Hill &amp; Eric Anderson in <a href="//localhost:4321/categories/theme-features">Theme Features</a> </p>
-        <p class="f7 db mv0 ttu">January 28, 2021</p>
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">Dose response curve fitting in R</h1>
+        <h4 class="f4 mt0 mb4 lh-title measure">A working example of how to fit dose response curves on ELISA data in R.</h4>
+        <p class="f6 measure lh-copy mv1">By Shubham Dutta in <a href="//localhost:4321/categories/elisa">ELISA</a>  <a href="//localhost:4321/categories/dose-response">dose response</a>  <a href="//localhost:4321/categories/ggplot2">ggplot2</a>  <a href="//localhost:4321/categories/drc">drc</a>  <a href="//localhost:4321/categories/broom">broom</a> </p>
+        <p class="f7 db mv0 ttu">June 8, 2023</p>
 
       
 
       </header>
       <section class="post-body pt5 pb4">
-        <p>There are five places where you can choose to show social icons. Here is the tl;dr:</p>
+        <p>Here is an example of how to fit and analyse dose response data using <code>ggplot2</code>, <code>drc</code>, and <code>broom</code>. We will start by loading some packages needed for the analysis.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>readr<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>dplyr<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>ggplot2<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>drc<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>broom<span style="color:#1f2328">)</span>
+</span></span></code></pre></div>
+
+
+
+<h2 id="the-data">The data
+  <a href="#the-data"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0z" fill="currentColor"></path>
+      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
+    </svg></a>
+</h2>
+<p>Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>raw_data <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">read_csv</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;elisa_drc.csv&#34;</span><span style="color:#1f2328">,</span> show_col_types <span style="color:#0550ae">=</span> <span style="color:#cf222e">FALSE</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">glimpse</span><span style="color:#1f2328">(</span>raw_data<span style="color:#1f2328">)</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## Rows: 50
+## Columns: 10
+## $ well                &lt;chr&gt; &#34;A01&#34;, &#34;A02&#34;, &#34;A03&#34;, &#34;A04&#34;, &#34;A05&#34;, &#34;A06&#34;, &#34;B01&#34;, &#34;…
+## $ coat_protein_name   &lt;chr&gt; &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBAC…
+## $ coat_protein_ug     &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, …
+## $ coat_protein_source &lt;chr&gt; &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;…
+## $ primary_mab_name    &lt;chr&gt; &#34;aBACE&#34;, &#34;aBACE&#34;, &#34;aBACE&#34;, &#34;aSARS&#34;, &#34;aSARS&#34;, &#34;aSAR…
+## $ primary_mab_clone   &lt;chr&gt; &#34;6626.1&#34;, &#34;6626.1&#34;, &#34;6626.1&#34;, &#34;CC6.29&#34;, &#34;CC6.29&#34;, …
+## $ primary_mab_conc    &lt;dbl&gt; 10.0000000, 10.0000000, 10.0000000, 10.0000000, 10…
+## $ secondary_mab_name  &lt;chr&gt; &#34;goat-aHuman&#34;, &#34;goat-aHuman&#34;, &#34;goat-aHuman&#34;, &#34;goat…
+## $ secondary_mab_dil   &lt;chr&gt; &#34;1to5000&#34;, &#34;1to5000&#34;, &#34;1to5000&#34;, &#34;1to5000&#34;, &#34;1to50…
+## $ od450               &lt;dbl&gt; 1.396, 1.170, 1.299, 1.324, 1.170, 1.299, 1.374, 1…
+</code></pre><p>Let&rsquo;s focus on three variables.</p>
 <ul>
-<li>site header (set in <code>config.toml</code>),</li>
-<li>site footer (set in <code>config.toml</code>),</li>
-<li>
-<a href="/">homepage</a> (set in <code>content/_index.md</code>),</li>
-<li>
-<a href="/about">about page</a> in the sidebar (set in <code>content/about/sidebar/index.md</code>), and</li>
-<li>
-<a href="/contact">contact page</a> (set in <code>content/form/contact.md</code>).</li>
+<li><code>primary_mab_name</code>: Two antibodies used in the ELISA experiment.</li>
+<li><code>primary_mab_conc</code>: Antibody concentration in µg/ml (the dose).</li>
+<li><code>od450</code>: Absorbance at 450 nm (the response).</li>
 </ul>
-<p>Read on to learn how to set up your social icons, and how to show/hide them.</p>
 
 
 
 
-<h2 id="configure-social">Configure social
-  <a href="#configure-social"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+<h2 id="prepare-data-before-plotting">Prepare data before plotting
+  <a href="#prepare-data-before-plotting"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 0h24v24H0z" fill="currentColor"></path>
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
-<p>Wherever you end up wanting to show your social icons, you&rsquo;ll need to start by setting up the links in your site <code>config.toml</code> file. Open that up and scroll down to the <code>[[params.social]]</code> section. The start of it looks like this:</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span><span style="color:#1f2328">[</span><span style="color:#1f2328">params</span><span style="color:#1f2328">]</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f6f8fa;background-color:#82071e">&lt;!</span><span style="color:#1f2328">--snip</span> <span style="color:#1f2328">snip--</span><span style="color:#f6f8fa;background-color:#82071e">&gt;</span>
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># Social icons may appear on your site header, footer, and other pages</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># Add as many icons as you like below</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># Icon pack &#34;fab&#34; includes brand icons, see: https://fontawesome.com/icons?d=gallery&amp;s=brands&amp;m=free</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># Icon pack &#34;fas&#34; includes solid icons, see: https://fontawesome.com/icons?d=gallery&amp;s=solid&amp;m=free</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># Icon pack &#34;far&#34; includes regular icons, see: https://fontawesome.com/icons?d=gallery&amp;s=regular&amp;m=free</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#1f2328">[[</span><span style="color:#1f2328">params</span><span style="color:#1f2328">.</span><span style="color:#1f2328">social</span><span style="color:#1f2328">]]</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#1f2328">icon</span>      <span style="color:#1f2328">=</span> <span style="color:#0a3069">&#34;github&#34;</span> <span style="color:#57606a"># icon name without the &#39;fa-&#39;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#1f2328">icon_pack</span> <span style="color:#1f2328">=</span> <span style="color:#0a3069">&#34;fab&#34;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#1f2328">url</span>       <span style="color:#1f2328">=</span> <span style="color:#0a3069">&#34;https://github.com/apreshill/apero&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#1f2328">[[</span><span style="color:#1f2328">params</span><span style="color:#1f2328">.</span><span style="color:#1f2328">social</span><span style="color:#1f2328">]]</span> <span style="color:#f6f8fa;background-color:#82071e">&lt;!</span><span style="color:#1f2328">--lather</span><span style="color:#1f2328">,</span> <span style="color:#1f2328">rinse</span><span style="color:#1f2328">,</span> <span style="color:#1f2328">repeat--</span><span style="color:#f6f8fa;background-color:#82071e">&gt;</span>
-</span></span></code></pre></div><p>For each link, you&rsquo;ll need to start a new portion that begins with <code>[[params.social]]</code>. Then, pick your <code>icon</code> and <code>icon_pack</code> from the 
-<a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a> free icon library:</p>
-<ul>
-<li>
-<p>Icon pack &ldquo;fab&rdquo; includes 
-<a href="https://fontawesome.com/icons?d=gallery&amp;s=brands&amp;m=free" target="_blank" rel="noopener">brand icons</a></p>
-</li>
-<li>
-<p>Icon pack &ldquo;fas&rdquo; includes 
-<a href="https://fontawesome.com/icons?d=gallery&amp;s=solid&amp;m=free" target="_blank" rel="noopener">solid icons</a></p>
-</li>
-<li>
-<p>Icon pack &ldquo;far&rdquo; includes 
-<a href="https://fontawesome.com/icons?d=gallery&amp;s=regular&amp;m=free" target="_blank" rel="noopener">regular icons</a></p>
-</li>
-</ul>
-<p>Finally, add the <code>url</code> that you would like users to go to when they click on that icon. All external links (i.e., those that start with <code>http</code>) will open in a new tab (that is, <code>target=&quot;_blank&quot;</code>); relative links to pages within the site will open in the same window.</p>
-<p>Now you should be all set to show/hide your social icons. Each of these will pull the social icons and urls from the settings you just created in your site configuration file.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>blank_data <span style="color:#0550ae">&lt;-</span> raw_data <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">filter</span><span style="color:#1f2328">(</span>primary_mab_name <span style="color:#0550ae">==</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span>mean_blank <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">mean</span><span style="color:#1f2328">(</span>blank_data[[<span style="color:#0a3069">&#34;od450&#34;</span>]]<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>summary <span style="color:#0550ae">&lt;-</span> raw_data <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">filter</span><span style="color:#1f2328">(</span>primary_mab_name <span style="color:#0550ae">!=</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">mutate</span><span style="color:#1f2328">(</span>blanked_od <span style="color:#0550ae">=</span> od450 <span style="color:#0550ae">-</span> mean_blank<span style="color:#1f2328">)</span> <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">group_by</span><span style="color:#1f2328">(</span>primary_mab_name<span style="color:#1f2328">,</span> primary_mab_conc<span style="color:#1f2328">)</span> <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">summarise</span><span style="color:#1f2328">(</span>
+</span></span><span style="display:flex;"><span>      mean_od <span style="color:#0550ae">=</span> <span style="color:#6639ba">mean</span><span style="color:#1f2328">(</span>blanked_od<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>      mean_sd <span style="color:#0550ae">=</span> <span style="color:#6639ba">sd</span><span style="color:#1f2328">(</span>blanked_od<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>      .groups <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#39;drop&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">head</span><span style="color:#1f2328">(</span>summary<span style="color:#1f2328">)</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## # A tibble: 6 × 4
+##   primary_mab_name primary_mab_conc mean_od mean_sd
+##   &lt;chr&gt;                       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 aBACE                     0.00244   0.138  0.0797
+## 2 aBACE                     0.00977   0.214  0.0626
+## 3 aBACE                     0.0391    0.395  0.0644
+## 4 aBACE                     0.156     0.740  0.0531
+## 5 aBACE                     0.625     1.11   0.0358
+## 6 aBACE                     2.5       1.28   0.0486
+</code></pre><p>Wherever you end up wanting to show your social icons, you&rsquo;ll need to start by setting up the links in your site <code>config.toml</code> file. Open that up and scroll down to the <code>[[params.social]]</code> section. The start of it looks like this:</p>
 
 
 
 
-<h2 id="show-social-in-site-header-and-footer">Show social in site header and footer
-  <a href="#show-social-in-site-header-and-footer"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+<h2 id="the-final-plot">The final plot
+  <a href="#the-final-plot"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 0h24v24H0z" fill="currentColor"></path>
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
-<p>Let&rsquo;s start with the header and footer, as those are site-wide. Open up your site <code>config.toml</code> file again and scroll down to the <code>[params]</code> section (it is actually &#x1f199; from where you configured these icons):</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span><span style="color:#1f2328">[</span><span style="color:#1f2328">params</span><span style="color:#1f2328">]</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f6f8fa;background-color:#82071e">&lt;!</span><span style="color:#1f2328">--snip</span> <span style="color:#1f2328">snip--</span><span style="color:#f6f8fa;background-color:#82071e">&gt;</span>
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># show/hide social icons in site header &amp; footer</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#57606a"># configure social icons and links below in [[params.social]]</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#1f2328">socialInHeader</span> <span style="color:#1f2328">=</span> <span style="color:#cf222e">false</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#1f2328">socialInFooter</span> <span style="color:#1f2328">=</span> <span style="color:#cf222e">true</span>
-</span></span></code></pre></div><p>That was easy!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">theme_set</span><span style="color:#1f2328">(</span><span style="color:#6639ba">theme_bw</span><span style="color:#1f2328">(</span>base_size <span style="color:#0550ae">=</span> <span style="color:#0550ae">20</span><span style="color:#1f2328">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">ggplot</span><span style="color:#1f2328">(</span>summary<span style="color:#1f2328">,</span> <span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> primary_mab_conc<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                    y <span style="color:#0550ae">=</span> mean_od<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                    group <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                    color <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>shape <span style="color:#0550ae">=</span> <span style="color:#0550ae">21</span><span style="color:#1f2328">,</span> size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_smooth</span><span style="color:#1f2328">(</span>method <span style="color:#0550ae">=</span> drc<span style="color:#0550ae">::</span>drm<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>              method.args <span style="color:#0550ae">=</span> <span style="color:#6639ba">list</span><span style="color:#1f2328">(</span>fct <span style="color:#0550ae">=</span> drc<span style="color:#0550ae">::</span><span style="color:#6639ba">L.4</span><span style="color:#1f2328">()),</span>
+</span></span><span style="display:flex;"><span>              se <span style="color:#0550ae">=</span> <span style="color:#cf222e">FALSE</span><span style="color:#1f2328">,</span> linewidth <span style="color:#0550ae">=</span> <span style="color:#0550ae">1</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_errorbar</span><span style="color:#1f2328">(</span><span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>ymin <span style="color:#0550ae">=</span> mean_od <span style="color:#0550ae">-</span> mean_sd<span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>                    ymax <span style="color:#0550ae">=</span> mean_od <span style="color:#0550ae">+</span> mean_sd<span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>                width <span style="color:#0550ae">=</span> <span style="color:#0550ae">0.1</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_x_log10</span><span style="color:#1f2328">()</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_color_manual</span><span style="color:#1f2328">(</span>values <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;#2F9D72&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;#2D3047&#34;</span><span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;Log of antibody concentration (µg/ml)&#34;</span><span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>       y <span style="color:#0550ae">=</span> <span style="color:#6639ba">expression</span><span style="color:#1f2328">(</span>OD[450]<span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>       color <span style="color:#0550ae">=</span> <span style="color:#cf222e">NULL</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">theme</span><span style="color:#1f2328">(</span>legend.position <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;inside&#34;</span><span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>        legend.position.inside <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0550ae">0.2</span><span style="color:#1f2328">,</span> <span style="color:#0550ae">0.7</span><span style="color:#1f2328">))</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
+</code></pre><img src="/blog/social/index_files/figure-html/plot-data-1.png" width="672" />
 
 
 
 
-<h2 id="show-social-in-homepage">Show social in homepage
-  <a href="#show-social-in-homepage"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+<h2 id="statistical-analysis-of-the-fit">Statistical analysis of the fit
+  <a href="#statistical-analysis-of-the-fit"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
       <path d="M0 0h24v24H0z" fill="currentColor"></path>
       <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
     </svg></a>
 </h2>
-<p>Open up <code>content/_index.md</code>. That file&rsquo;s YAML controls what you see on the homepage. Set <code>show_social_links</code> like so:</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#0550ae">show_social_links</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#cf222e">true</span><span style="color:#fff"> </span><span style="color:#57606a"># specify social accounts in site config</span><span style="color:#fff">
-</span></span></span></code></pre></div><p>If you set this to <code>true</code> to show the icons on the homepage, your social icons in the footer will not show up even when you set <code>socialInFooter = true</code>, so as not to litter your site with too many icons.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>raw_data_no_blanks <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">subset</span><span style="color:#1f2328">(</span>raw_data<span style="color:#1f2328">,</span> primary_mab_name <span style="color:#0550ae">!=</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span>drm_model <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">drm</span><span style="color:#1f2328">(</span>formula <span style="color:#0550ae">=</span> od450<span style="color:#0550ae">~</span>primary_mab_conc<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                 curveid <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                 data <span style="color:#0550ae">=</span> raw_data_no_blanks<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                 fct <span style="color:#0550ae">=</span> <span style="color:#6639ba">LL.4</span><span style="color:#1f2328">(</span>names<span style="color:#0550ae">=</span><span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;Slope&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;Lower&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;Upper&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;ED50&#34;</span><span style="color:#1f2328">)))</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># tidy(drm_model)</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># glance(drm_model)</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># augment(drm_model, data = raw_data_no_blanks)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">ggplot</span><span style="color:#1f2328">(</span><span style="color:#6639ba">augment</span><span style="color:#1f2328">(</span>drm_model<span style="color:#1f2328">,</span> data <span style="color:#0550ae">=</span> raw_data_no_blanks<span style="color:#1f2328">),</span> 
+</span></span><span style="display:flex;"><span>       <span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>.fitted<span style="color:#1f2328">,</span> .resid<span style="color:#1f2328">,</span> color <span style="color:#0550ae">=</span> <span style="color:#6639ba">as.factor</span><span style="color:#1f2328">(</span>primary_mab_conc<span style="color:#1f2328">)))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_hline</span><span style="color:#1f2328">(</span>yintercept <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>shape <span style="color:#0550ae">=</span> <span style="color:#0550ae">21</span><span style="color:#1f2328">,</span> size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>color <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;dilutions&#34;</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">facet_grid</span><span style="color:#1f2328">(</span>cols <span style="color:#0550ae">=</span> <span style="color:#6639ba">vars</span><span style="color:#1f2328">(</span>primary_mab_name<span style="color:#1f2328">))</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## Warning in model$der: partial match of &#39;der&#39; to &#39;deriv1&#39;
+</code></pre><img src="/blog/social/index_files/figure-html/fit-data-2-1.png" width="672" />
 
-
-
-
-<h2 id="show-social-in-about-page-sidebar">Show social in about page sidebar
-  <a href="#show-social-in-about-page-sidebar"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 0h24v24H0z" fill="currentColor"></path>
-      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
-    </svg></a>
-</h2>
-<p>Open up <code>content/about/sidebar/index.md</code>. That file&rsquo;s YAML controls what you see in the sidebar on the about page. Set <code>show_social_links</code> like so:</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#0550ae">show_social_links</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#cf222e">true</span><span style="color:#fff"> </span><span style="color:#57606a"># specify social accounts in site config</span><span style="color:#fff">
-</span></span></span></code></pre></div>
-
-
-
-<h2 id="show-social-in-contact-page">Show social in contact page
-  <a href="#show-social-in-contact-page"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 0h24v24H0z" fill="currentColor"></path>
-      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
-    </svg></a>
-</h2>
-<p>You may use the YAML for your contact page (located in <code>content/form/contact.md</code>):</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#24292e">---</span><span style="color:#fff">
-</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">show_social_links</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#cf222e">true</span><span style="color:#fff"> </span><span style="color:#57606a"># specify social accounts in site config</span><span style="color:#fff">
-</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#24292e">---</span><span style="color:#fff">
-</span></span></span></code></pre></div>
         
         <details closed class="f6 fw7 input-reset">
   <dl class="f6 lh-copy">
     <dt class="fw7">Posted on:</dt>
-    <dd class="fw5 ml0">January 28, 2021</dd>
+    <dd class="fw5 ml0">June 8, 2023</dd>
   </dl>
   <dl class="f6 lh-copy">
     <dt class="fw7">Length:</dt>
-    <dd class="fw5 ml0">3 minute read, 508 words</dd>
+    <dd class="fw5 ml0">3 minute read, 521 words</dd>
   </dl>
   
   <dl class="f6 lh-copy">
     <dt class="fw7">Categories:</dt>
-    <dd class="fw5 ml0"> <a href="//localhost:4321/categories/theme-features">Theme Features</a> </dd>
+    <dd class="fw5 ml0"> <a href="//localhost:4321/categories/elisa">ELISA</a>  <a href="//localhost:4321/categories/dose-response">dose response</a>  <a href="//localhost:4321/categories/ggplot2">ggplot2</a>  <a href="//localhost:4321/categories/drc">drc</a>  <a href="//localhost:4321/categories/broom">broom</a> </dd>
   </dl>
   
   

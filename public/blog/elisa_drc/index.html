@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=4321&amp;path=livereload" data-no-instant defer></script>
+  
+                           
+     
+
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.143.1">
+<title>Dose response curve fitting in R | Shubham Dutta</title>
+
+
+<meta property="twitter:site" content="@ursshubham">
+<meta property="twitter:creator" content="@ursshubham">
+
+
+
+
+
+
+
+  
+    
+  
+<meta name="description" content="A working example of how to fit dose response curves on ELISA data in R.">
+
+
+<meta property="og:site_name" content="Shubham Dutta">
+<meta property="og:title" content="Dose response curve fitting in R | Shubham Dutta">
+<meta property="og:description" content="A working example of how to fit dose response curves on ELISA data in R." />
+<meta property="og:type" content="page" />
+<meta property="og:url" content="//localhost:4321/blog/elisa_drc/" />
+<meta property="og:locale" content="en">
+
+
+
+
+    
+        <meta property="og:image" content="//localhost:4321/blog/elisa_drc/featured.jpg" >
+        <meta property="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="//localhost:4321/blog/elisa_drc/featured.jpg" >
+    
+    
+  
+  <meta itemprop="name" content="Dose response curve fitting in R">
+  <meta itemprop="description" content="Here is an example of how to fit and analyse dose response data using ggplot2, drc, and broom. We will start by loading some packages needed for the analysis.
+library(readr) library(dplyr) library(ggplot2) library(drc) library(broom) The data Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.">
+  <meta itemprop="datePublished" content="2023-06-08T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2023-06-08T00:00:00+00:00">
+  <meta itemprop="wordCount" content="521">
+  <meta itemprop="image" content="//localhost:4321/blog/elisa_drc/featured.jpg">
+  <meta itemprop="keywords" content="ELISA,Dose Response,Ggplot2,Drc,Broom">
+  
+  <!--[if IE]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+  
+  
+  <link rel="stylesheet" href="/style.main.min.7388ebadd98c27708333ac13eac58c95cb513d3fc2c33885da79fa4040ee0349.css" integrity="sha256-c4jrrdmMJ3CDM6wT6sWMlctRPT/CwziF2nn6QEDuA0k=" media="screen">
+  
+  
+  <script src="/panelset.min.ed1ac24b6e16f4e2481e3d1d098ae66f5bc77438aef619e6e266d8ac5b00dc72.js" type="text/javascript"></script>
+  
+  
+  <script src="/main.min.28630c3344a4520ee1898482499e9e1b856d93027a12b983e8eafbbeb7009505.js" type="text/javascript"></script>
+</head>
+<body>
+      <div class="grid-container single">
+<header class="site-header pt4 pb2 mb4 bb b--transparent ph5 headroom z-max" role="banner">
+  <nav class="site-nav db dt-l w-100" role="navigation">
+    <a class="site-brand db dtc-l v-mid link no-underline w-100 w-33-l tc tl-l" href="//localhost:4321/" title="Home">
+      <img src="/img/blogophonic-mark-dark.png" class="dib db-l h2 w-auto" alt="Shubham Dutta">
+    </a>
+    <div class="site-links db dtc-l v-mid w-100 w-47-l tc tr-l mt3 mt0-l ttu tracked">
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/about/" title="About Blogophonic">About</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 active" href="/blog/" title="Blog">Blog</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/project/" title="Project Portfolio">Projects</a>
+      
+        
+        
+        
+      <a class="link f6 f5-l dib pv1 ph2 " href="/talk/" title="Talks">Talks</a>
+      
+      
+    </div>
+  </nav>
+</header>
+
+<main class="page-main pa4" role="main">
+  <section class="page-content mw7 center">
+    <article class="post-content pa0 ph4-l">
+      <header class="post-header">
+        <h1 class="f1 lh-solid measure-narrow mb3 fw4">Dose response curve fitting in R</h1>
+        <h4 class="f4 mt0 mb4 lh-title measure">A working example of how to fit dose response curves on ELISA data in R.</h4>
+        <p class="f6 measure lh-copy mv1">By Shubham Dutta in <a href="//localhost:4321/categories/elisa">ELISA</a>  <a href="//localhost:4321/categories/dose-response">dose response</a>  <a href="//localhost:4321/categories/ggplot2">ggplot2</a>  <a href="//localhost:4321/categories/drc">drc</a>  <a href="//localhost:4321/categories/broom">broom</a> </p>
+        <p class="f7 db mv0 ttu">June 8, 2023</p>
+
+      
+
+      </header>
+      <section class="post-body pt5 pb4">
+        <p>Here is an example of how to fit and analyse dose response data using <code>ggplot2</code>, <code>drc</code>, and <code>broom</code>. We will start by loading some packages needed for the analysis.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>readr<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>dplyr<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>ggplot2<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>drc<span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">library</span><span style="color:#1f2328">(</span>broom<span style="color:#1f2328">)</span>
+</span></span></code></pre></div>
+
+
+
+<h2 id="the-data">The data
+  <a href="#the-data"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0z" fill="currentColor"></path>
+      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
+    </svg></a>
+</h2>
+<p>Our data is a dose response ELISA experiment for two different antibody reagents. The data can be found here.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>raw_data <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">read_csv</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;elisa_drc.csv&#34;</span><span style="color:#1f2328">,</span> show_col_types <span style="color:#0550ae">=</span> <span style="color:#cf222e">FALSE</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">glimpse</span><span style="color:#1f2328">(</span>raw_data<span style="color:#1f2328">)</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## Rows: 50
+## Columns: 10
+## $ well                &lt;chr&gt; &#34;A01&#34;, &#34;A02&#34;, &#34;A03&#34;, &#34;A04&#34;, &#34;A05&#34;, &#34;A06&#34;, &#34;B01&#34;, &#34;…
+## $ coat_protein_name   &lt;chr&gt; &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBACE&#34;, &#34;sBAC…
+## $ coat_protein_ug     &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, …
+## $ coat_protein_source &lt;chr&gt; &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;NS0&#34;, &#34;…
+## $ primary_mab_name    &lt;chr&gt; &#34;aBACE&#34;, &#34;aBACE&#34;, &#34;aBACE&#34;, &#34;aSARS&#34;, &#34;aSARS&#34;, &#34;aSAR…
+## $ primary_mab_clone   &lt;chr&gt; &#34;6626.1&#34;, &#34;6626.1&#34;, &#34;6626.1&#34;, &#34;CC6.29&#34;, &#34;CC6.29&#34;, …
+## $ primary_mab_conc    &lt;dbl&gt; 10.0000000, 10.0000000, 10.0000000, 10.0000000, 10…
+## $ secondary_mab_name  &lt;chr&gt; &#34;goat-aHuman&#34;, &#34;goat-aHuman&#34;, &#34;goat-aHuman&#34;, &#34;goat…
+## $ secondary_mab_dil   &lt;chr&gt; &#34;1to5000&#34;, &#34;1to5000&#34;, &#34;1to5000&#34;, &#34;1to5000&#34;, &#34;1to50…
+## $ od450               &lt;dbl&gt; 1.396, 1.170, 1.299, 1.324, 1.170, 1.299, 1.374, 1…
+</code></pre><p>Let&rsquo;s focus on three variables.</p>
+<ul>
+<li><code>primary_mab_name</code>: Two antibodies used in the ELISA experiment.</li>
+<li><code>primary_mab_conc</code>: Antibody concentration in µg/ml (the dose).</li>
+<li><code>od450</code>: Absorbance at 450 nm (the response).</li>
+</ul>
+
+
+
+
+<h2 id="prepare-data-before-plotting">Prepare data before plotting
+  <a href="#prepare-data-before-plotting"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0z" fill="currentColor"></path>
+      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
+    </svg></a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>blank_data <span style="color:#0550ae">&lt;-</span> raw_data <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">filter</span><span style="color:#1f2328">(</span>primary_mab_name <span style="color:#0550ae">==</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span>mean_blank <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">mean</span><span style="color:#1f2328">(</span>blank_data[[<span style="color:#0a3069">&#34;od450&#34;</span>]]<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>summary <span style="color:#0550ae">&lt;-</span> raw_data <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">filter</span><span style="color:#1f2328">(</span>primary_mab_name <span style="color:#0550ae">!=</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">mutate</span><span style="color:#1f2328">(</span>blanked_od <span style="color:#0550ae">=</span> od450 <span style="color:#0550ae">-</span> mean_blank<span style="color:#1f2328">)</span> <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">group_by</span><span style="color:#1f2328">(</span>primary_mab_name<span style="color:#1f2328">,</span> primary_mab_conc<span style="color:#1f2328">)</span> <span style="color:#0550ae">|&gt;</span>
+</span></span><span style="display:flex;"><span>    dplyr<span style="color:#0550ae">::</span><span style="color:#6639ba">summarise</span><span style="color:#1f2328">(</span>
+</span></span><span style="display:flex;"><span>      mean_od <span style="color:#0550ae">=</span> <span style="color:#6639ba">mean</span><span style="color:#1f2328">(</span>blanked_od<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>      mean_sd <span style="color:#0550ae">=</span> <span style="color:#6639ba">sd</span><span style="color:#1f2328">(</span>blanked_od<span style="color:#1f2328">,</span> na.rm <span style="color:#0550ae">=</span> <span style="color:#cf222e">TRUE</span><span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>      .groups <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#39;drop&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">head</span><span style="color:#1f2328">(</span>summary<span style="color:#1f2328">)</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## # A tibble: 6 × 4
+##   primary_mab_name primary_mab_conc mean_od mean_sd
+##   &lt;chr&gt;                       &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 aBACE                     0.00244   0.138  0.0797
+## 2 aBACE                     0.00977   0.214  0.0626
+## 3 aBACE                     0.0391    0.395  0.0644
+## 4 aBACE                     0.156     0.740  0.0531
+## 5 aBACE                     0.625     1.11   0.0358
+## 6 aBACE                     2.5       1.28   0.0486
+</code></pre><p>Wherever you end up wanting to show your social icons, you&rsquo;ll need to start by setting up the links in your site <code>config.toml</code> file. Open that up and scroll down to the <code>[[params.social]]</code> section. The start of it looks like this:</p>
+
+
+
+
+<h2 id="the-final-plot">The final plot
+  <a href="#the-final-plot"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0z" fill="currentColor"></path>
+      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
+    </svg></a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">theme_set</span><span style="color:#1f2328">(</span><span style="color:#6639ba">theme_bw</span><span style="color:#1f2328">(</span>base_size <span style="color:#0550ae">=</span> <span style="color:#0550ae">20</span><span style="color:#1f2328">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">ggplot</span><span style="color:#1f2328">(</span>summary<span style="color:#1f2328">,</span> <span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> primary_mab_conc<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                    y <span style="color:#0550ae">=</span> mean_od<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                    group <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                    color <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>shape <span style="color:#0550ae">=</span> <span style="color:#0550ae">21</span><span style="color:#1f2328">,</span> size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_smooth</span><span style="color:#1f2328">(</span>method <span style="color:#0550ae">=</span> drc<span style="color:#0550ae">::</span>drm<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>              method.args <span style="color:#0550ae">=</span> <span style="color:#6639ba">list</span><span style="color:#1f2328">(</span>fct <span style="color:#0550ae">=</span> drc<span style="color:#0550ae">::</span><span style="color:#6639ba">L.4</span><span style="color:#1f2328">()),</span>
+</span></span><span style="display:flex;"><span>              se <span style="color:#0550ae">=</span> <span style="color:#cf222e">FALSE</span><span style="color:#1f2328">,</span> linewidth <span style="color:#0550ae">=</span> <span style="color:#0550ae">1</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_errorbar</span><span style="color:#1f2328">(</span><span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>ymin <span style="color:#0550ae">=</span> mean_od <span style="color:#0550ae">-</span> mean_sd<span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>                    ymax <span style="color:#0550ae">=</span> mean_od <span style="color:#0550ae">+</span> mean_sd<span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>                width <span style="color:#0550ae">=</span> <span style="color:#0550ae">0.1</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_x_log10</span><span style="color:#1f2328">()</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">scale_color_manual</span><span style="color:#1f2328">(</span>values <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;#2F9D72&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;#2D3047&#34;</span><span style="color:#1f2328">))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>x <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;Log of antibody concentration (µg/ml)&#34;</span><span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>       y <span style="color:#0550ae">=</span> <span style="color:#6639ba">expression</span><span style="color:#1f2328">(</span>OD[450]<span style="color:#1f2328">),</span>
+</span></span><span style="display:flex;"><span>       color <span style="color:#0550ae">=</span> <span style="color:#cf222e">NULL</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">theme</span><span style="color:#1f2328">(</span>legend.position <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;inside&#34;</span><span style="color:#1f2328">,</span>
+</span></span><span style="display:flex;"><span>        legend.position.inside <span style="color:#0550ae">=</span> <span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0550ae">0.2</span><span style="color:#1f2328">,</span> <span style="color:#0550ae">0.7</span><span style="color:#1f2328">))</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;
+</code></pre><img src="/blog/elisa_drc/index_files/figure-html/plot-data-1.png" width="672" />
+
+
+
+
+<h2 id="statistical-analysis-of-the-fit">Statistical analysis of the fit
+  <a href="#statistical-analysis-of-the-fit"><svg class="anchor-symbol" aria-hidden="true" height="26" width="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0z" fill="currentColor"></path>
+      <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76.0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71.0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71.0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76.0 5-2.24 5-5s-2.24-5-5-5z"></path>
+    </svg></a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>raw_data_no_blanks <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">subset</span><span style="color:#1f2328">(</span>raw_data<span style="color:#1f2328">,</span> primary_mab_name <span style="color:#0550ae">!=</span> <span style="color:#0a3069">&#34;blank&#34;</span><span style="color:#1f2328">)</span>
+</span></span><span style="display:flex;"><span>drm_model <span style="color:#0550ae">&lt;-</span> <span style="color:#6639ba">drm</span><span style="color:#1f2328">(</span>formula <span style="color:#0550ae">=</span> od450<span style="color:#0550ae">~</span>primary_mab_conc<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                 curveid <span style="color:#0550ae">=</span> primary_mab_name<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                 data <span style="color:#0550ae">=</span> raw_data_no_blanks<span style="color:#1f2328">,</span> 
+</span></span><span style="display:flex;"><span>                 fct <span style="color:#0550ae">=</span> <span style="color:#6639ba">LL.4</span><span style="color:#1f2328">(</span>names<span style="color:#0550ae">=</span><span style="color:#6639ba">c</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;Slope&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;Lower&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;Upper&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;ED50&#34;</span><span style="color:#1f2328">)))</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># tidy(drm_model)</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># glance(drm_model)</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># augment(drm_model, data = raw_data_no_blanks)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#6639ba">ggplot</span><span style="color:#1f2328">(</span><span style="color:#6639ba">augment</span><span style="color:#1f2328">(</span>drm_model<span style="color:#1f2328">,</span> data <span style="color:#0550ae">=</span> raw_data_no_blanks<span style="color:#1f2328">),</span> 
+</span></span><span style="display:flex;"><span>       <span style="color:#6639ba">aes</span><span style="color:#1f2328">(</span>.fitted<span style="color:#1f2328">,</span> .resid<span style="color:#1f2328">,</span> color <span style="color:#0550ae">=</span> <span style="color:#6639ba">as.factor</span><span style="color:#1f2328">(</span>primary_mab_conc<span style="color:#1f2328">)))</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_hline</span><span style="color:#1f2328">(</span>yintercept <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">geom_point</span><span style="color:#1f2328">(</span>shape <span style="color:#0550ae">=</span> <span style="color:#0550ae">21</span><span style="color:#1f2328">,</span> size <span style="color:#0550ae">=</span> <span style="color:#0550ae">3</span><span style="color:#1f2328">,</span> stroke <span style="color:#0550ae">=</span> <span style="color:#0550ae">1.5</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">labs</span><span style="color:#1f2328">(</span>color <span style="color:#0550ae">=</span> <span style="color:#0a3069">&#34;dilutions&#34;</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6639ba">facet_grid</span><span style="color:#1f2328">(</span>cols <span style="color:#0550ae">=</span> <span style="color:#6639ba">vars</span><span style="color:#1f2328">(</span>primary_mab_name<span style="color:#1f2328">))</span>
+</span></span></code></pre></div><pre tabindex="0"><code>## Warning in model$der: partial match of &#39;der&#39; to &#39;deriv1&#39;
+</code></pre><img src="/blog/elisa_drc/index_files/figure-html/fit-data-2-1.png" width="672" />
+
+        
+        <details closed class="f6 fw7 input-reset">
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Posted on:</dt>
+    <dd class="fw5 ml0">June 8, 2023</dd>
+  </dl>
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Length:</dt>
+    <dd class="fw5 ml0">3 minute read, 521 words</dd>
+  </dl>
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">Categories:</dt>
+    <dd class="fw5 ml0"> <a href="//localhost:4321/categories/elisa">ELISA</a>  <a href="//localhost:4321/categories/dose-response">dose response</a>  <a href="//localhost:4321/categories/ggplot2">ggplot2</a>  <a href="//localhost:4321/categories/drc">drc</a>  <a href="//localhost:4321/categories/broom">broom</a> </dd>
+  </dl>
+  
+  
+  
+  <dl class="f6 lh-copy">
+    <dt class="fw7">See Also:</dt>
+    
+  </dl>
+</details>
+
+      </section>
+      <footer class="post-footer">
+        <div class="post-pagination dt w-100 mt4 mb2">
+  
+  
+  
+  
+    <a class="next dtc pl2 tr v-top fw6"
+    href="//localhost:4321/blog/color-themes/">Style your site colors &rarr;</a>
+  
+</div>
+
+      </footer>
+    </article>
+    
+      <div class="post-comments pa0 pa4-l mt4">
+  
+    
+      <script src="https://utteranc.es/client.js"
+              repo="apreshill/apero"
+              issue-term="pathname"
+              theme="boxy-light"
+              label="comments :crystal_ball:"
+              crossorigin="anonymous"
+              async
+              type="text/javascript">
+      </script>
+    
+  
+</div>
+
+    
+  </section>
+</main>
+<footer class="site-footer pv4 bt b--transparent ph5" role="contentinfo">
+  <nav class="db dt-l w-100">
+    <p class="site-copyright f7 db dtc-l v-mid w-100 w-33-l tc tl-l pv2 pv0-l mv0 lh-copy">
+      &copy; 2025 Shubham Dutta, Massachusetts
+      <span class="middot-divider"></span>
+      Made with <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/hugo-apero/" rel="dct:source">Hugo Apéro</a></span>.
+      <br />
+      
+Based on <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"><a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/formspree/blogophonic-hugo" rel="dct:source">Blogophonic</a></span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://formspree.io" property="cc:attributionName" rel="cc:attributionURL">Formspree</a>.
+    </p>
+    
+    <div class="site-social-links db dtc-l v-mid w-100 w-33-l tc pv2 pv0-l mv0">
+      <div class="social-icon-links" aria-hidden="true">
+  
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://github.com/shubhamdutta26" title="github" target="_blank" rel="me noopener">
+      <i class="fab fa-github fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://orcid.org/0000-0001-8484-0717" title="orcid" target="_blank" rel="me noopener">
+      <i class="fab fa-orcid fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://scholar.google.com/citations?user=okp_AlgAAAAJ&amp;hl=en" title="google-scholar" target="_blank" rel="me noopener">
+      <i class="fab fa-google-scholar fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://scholar.google.com/citations?user=okp_AlgAAAAJ&amp;hl=en" title="linkedin" target="_blank" rel="me noopener">
+      <i class="fab fa-linkedin fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="https://scholar.google.com/citations?user=okp_AlgAAAAJ&amp;hl=en" title="youtube" target="_blank" rel="me noopener">
+      <i class="fab fa-youtube fa-lg fa-fw"></i>
+    </a>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <a class="link dib h1 w1 ml0 mr2 f6 o-90 glow" href="/blog/index.xml" title="rss" >
+      <i class="fas fa-rss fa-lg fa-fw"></i>
+    </a>
+  
+</div>
+
+    </div>
+    
+    <div class="site-links f6 db dtc-l v-mid w-100 w-67-l tc tr-l pv2 pv0-l mv0">
+      
+      <a class="dib pv1 ph2 link" href="/license/" title="License">License</a>
+      
+      <a class="dib pv1 ph2 link" href="/contact/" title="Contact form">Contact</a>
+      
+    </div>
+  </nav>
+  
+    <script>
+
+    var i, text, code, codes = document.getElementsByTagName('code');
+    for (let i = 0; i < codes.length;) {
+      code = codes[i];
+      if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+        text = code.textContent;
+        if (/^\$[^$]/.test(text) && /[^$]\$$/.test(text)) {
+          text = text.replace(/^\$/, '\\(').replace(/\$$/, '\\)');
+          code.textContent = text;
+        }
+        if (/^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\$(.|\s)+\$$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+          code.outerHTML = code.innerHTML;  
+          continue;
+        }
+      }
+      i++;
+    }
+</script>
+
+  
+    
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css" integrity="sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js" integrity="sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js" integrity="sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+
+
+    
+  
+  
+</footer>
+
+      </div>
+    </body>
+</html>
